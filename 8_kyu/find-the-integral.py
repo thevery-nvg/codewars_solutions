@@ -1,0 +1,6 @@
+
+'''https://www.codewars.com/kata/59811fd8a070625d4c000013/train/python'''
+
+
+def integrate(c, e):
+    return f"{int(c/(e+1))}x^{e+1}"
