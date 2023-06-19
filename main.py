@@ -27,7 +27,7 @@ def make_list_completed_challenges():
     for page in range(get_total_pages()):
         url = f"https://www.codewars.com/api/v1/users/{user}/code-challenges/completed?page={page}"
         resp.extend(requests.get(url).json()['data'])
-    if Path("D:\\Python\\codewars_solutions\\data.json").exists():
+    if Path("data.json").exists():
         with open('data.json') as file:
             old_data = json.load(file)
         for k in old_data:
@@ -58,10 +58,10 @@ def parse_katas():
 
     # Сохраняем решенные задачи по папкам
     count = 0
-    if Path("D:\\Python\\codewars_solutions\\new_data.json").exists():
+    if Path("new_data.json").exists():
         with open('new_data.json') as file:
             d = json.load(file)
-        Path("D:\\Python\\codewars_solutions\\new_data.json").unlink()
+        Path("new_data.json").unlink()
         with open('data.json') as file:
             old = json.load(file)
         with open('data.json', 'w') as file:
