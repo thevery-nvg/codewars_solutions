@@ -14,7 +14,6 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 user = os.getenv('CODEWARS_USER')
-user = 'theverynvg'
 
 
 def get_total_pages():
@@ -24,10 +23,20 @@ def get_total_pages():
 
 
 def make_list_completed_challenges():
+    resp = []
     for page in range(get_total_pages()):
         url = f"https://www.codewars.com/api/v1/users/{user}/code-challenges/completed?page={page}"
-        resp = requests.get(url).json()['data']
-        with open('data.json', 'a') as file:
+        resp.extend(requests.get(url).json()['data'])
+    if Path("D:\\Python\\codewars_solutions\\data.json").exists():
+        with open('data.json') as file:
+            old_data = json.load(file)
+        for k in old_data:
+            if k in resp:
+                del resp[k]
+        with open('new_data.json', 'w') as file:
+            json.dump(resp, file, indent=4, ensure_ascii=False)
+    else:
+        with open(f'data.json', 'w') as file:
             json.dump(resp, file, indent=4, ensure_ascii=False)
 
 
@@ -49,8 +58,19 @@ def parse_katas():
 
     # Сохраняем решенные задачи по папкам
     count = 0
-    with open('data.json') as file:
-        d = json.load(file)
+    if Path("D:\\Python\\codewars_solutions\\new_data.json").exists():
+        with open('new_data.json') as file:
+            d = json.load(file)
+        Path("D:\\Python\\codewars_solutions\\new_data.json").unlink()
+        with open('data.json') as file:
+            old = json.load(file)
+        with open('data.json', 'w') as file:
+            old.extend(d)
+            json.dump(old, file, indent=4, ensure_ascii=False)
+
+    else:
+        with open('data.json') as file:
+            d = json.load(file)
     for i in d:
         count += 1
         url = f"https://www.codewars.com/kata/{i['id']}/train/python"
