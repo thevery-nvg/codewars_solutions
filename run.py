@@ -35,6 +35,7 @@ class CWParser:
         input_password.send_keys(Keys.ENTER)
 
     def _check_old(self, new_katas):
+        d=[]
         # Проверяем парсились ли уже задачи
         if Path("data.json").exists():
             with open('data.json') as file:
