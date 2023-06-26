@@ -42,9 +42,9 @@ class CWParser:
             for k in d:
                 if k in new_katas:
                     del new_katas[k]
-            with open('data.json', 'w') as file:
-                d.extend(new_katas)
-                json.dump(d, file, indent=4, ensure_ascii=False)
+        with open('data.json', 'w') as file:
+            d.extend(new_katas)
+            json.dump(d, file, indent=4, ensure_ascii=False)
         return new_katas
 
     def _get_total_pages(self):
