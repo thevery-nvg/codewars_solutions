@@ -23,7 +23,7 @@ class CWParser:
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install(), options=Options()))
 
     def _auth(self):
-        # Авторизация
+        """Авторизация"""
         url = "https://www.codewars.com/users/sign_in"
         self.browser.get(url=url)
         input_email = self.browser.find_element(By.ID, "user_email")
@@ -35,6 +35,7 @@ class CWParser:
         input_password.send_keys(Keys.ENTER)
 
     def _check_old(self):
+        """Проверяем есть ли уже спарсенные решения, и исключаем их из списка"""
         with open('data.json') as file:
             data = json.load(file)
         parsed = []
@@ -56,7 +57,7 @@ class CWParser:
         return requests.get(url).json()["totalPages"]
 
     def _make_list_completed_challenges(self):
-        # Возвращает список решенных задач
+        """Возвращает список решенных задач"""
         resp = []
         for page in range(self._get_total_pages()):
             url = f"https://www.codewars.com/api/v1/users/{self.user}/code-challenges/completed?page={page}"
