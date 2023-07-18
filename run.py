@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 class CWParser:
     def __init__(self):
         self.user = os.getenv('CODEWARS_USER')
-        self.email = os.getenv("CODEWARS_EMAIL")
+        self.email = os.getenv('CODEWARS_EMAIL')
         self.password = os.getenv('CODEWARS_PASSWORD')
         # Создание объекта драйвера
         self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install(), options=Options()))
@@ -30,23 +30,25 @@ class CWParser:
         input_password = self.browser.find_element(By.ID, "user_password")
         input_email.clear()
         input_password.clear()
-        input_email.send_keys(os.getenv("CODEWARS_EMAIL"))
-        input_password.send_keys(os.getenv('CODEWARS_PASSWORD'))
+        input_email.send_keys(self.email)
+        input_password.send_keys(self.password)
         input_password.send_keys(Keys.ENTER)
 
-    def _check_old(self, new_katas):
-        d=[]
-        # Проверяем парсились ли уже задачи
-        if Path("data.json").exists():
-            with open('data.json') as file:
-                d = json.load(file)
-            for k in d:
-                if k in new_katas:
-                    del new_katas[k]
-        with open('data.json', 'w') as file:
-            d.extend(new_katas)
-            json.dump(d, file, indent=4, ensure_ascii=False)
-        return new_katas
+    def _check_old(self):
+        with open('data.json') as file:
+            data = json.load(file)
+        parsed = []
+        must_parse = []
+        dirs = [f'{x}_kyu' for x in range(1, 9)]
+        for d in dirs:
+            p = Path.cwd().joinpath(d)
+            if p.exists():
+                for solution in p.iterdir():
+                    parsed.append(solution.stem)
+        for s in data:
+            if s['slug'] not in parsed:
+                must_parse.append(s)
+        return must_parse
 
     def _get_total_pages(self):
         """Возвращает количество страниц, на которых есть данные"""
@@ -59,7 +61,9 @@ class CWParser:
         for page in range(self._get_total_pages()):
             url = f"https://www.codewars.com/api/v1/users/{self.user}/code-challenges/completed?page={page}"
             resp.extend(requests.get(url).json()['data'])
-        return self._check_old(resp)
+        with open('data.json', 'w') as file:
+            json.dump(resp, file, indent=4, ensure_ascii=False)
+        return self._check_old()
 
     def parse(self):
         self._auth()
