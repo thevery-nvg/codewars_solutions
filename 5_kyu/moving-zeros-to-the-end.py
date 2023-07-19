@@ -3,11 +3,4 @@
 
 
 def move_zeros(nums):
-    p = 0
-    for i in range(len(nums)):
-        if nums[i]:
-            nums[p] = nums[i]
-            if i > p:
-                nums[i] = 0
-            p += 1
-    return nums
+    return sorted(nums,key=lambda x:x==0)
